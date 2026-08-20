@@ -30,13 +30,17 @@ export default function HomeScreen() {
               <View style={styles.progressBlock}><View style={styles.progressLine}><Text style={styles.percent}>{Math.round(metrics.collectionProgress)}%</Text><Text style={styles.progressLabel}>إنجاز التحصيل</Text></View><ProgressBar value={metrics.collectionProgress} color="#4A1E53" /></View>
             </View>
 
-            <View style={styles.metricRow}><MetricCard label="متبقي للبيع" value={`${currency(metrics.salesRemaining)} ج.م`} caption={`تم ${currency(metrics.salesActual)} ج.م`} accent="#E89B2C" icon="trending-up" /><MetricCard label="متبقي للتحصيل" value={`${currency(metrics.collectionRemaining)} ج.م`} caption={`تم ${currency(metrics.collectionActual)} ج.م`} accent="#4A1E53" icon="account-balance-wallet" /></View>
+            <SectionTitle title="المحقق ونسبة التحقيق" />
+            <View style={styles.metricRow}><MetricCard label="المحقق من البيع" value={`${currency(metrics.salesActual)} ج.م`} caption={`${Math.round(metrics.salesProgress)}% من تارجت البيع`} accent="#E89B2C" icon="trending-up" /><MetricCard label="المحقق من التحصيل" value={`${currency(metrics.collectionActual)} ج.م`} caption={`${Math.round(metrics.collectionProgress)}% من تارجت التحصيل`} accent="#4A1E53" icon="account-balance-wallet" /></View>
+            <View style={styles.metricRow}><MetricCard label="متبقي للبيع" value={`${currency(metrics.salesRemaining)} ج.م`} caption={`تارجت ${currency(activeTarget.salesTarget)} ج.م`} accent="#C47B12" icon="flag" /><MetricCard label="متبقي للتحصيل" value={`${currency(metrics.collectionRemaining)} ج.م`} caption={`تارجت ${currency(activeTarget.collectionTarget)} ج.م`} accent="#4A1E53" icon="flag" /></View>
 
             <SectionTitle title="المطلوب لتحقيق التارجت" />
             <View style={styles.cadence}><Text style={styles.cadenceQuestion}>اعرض المطلوب:</Text><View style={styles.cadenceButtons}>{(Object.keys(cadenceLabels) as (keyof typeof cadenceLabels)[]).map((key) => <Pressable key={key} onPress={() => setCadence(key)} style={({ pressed }) => [styles.cadenceButton, cadence === key && styles.cadenceActive, pressed && styles.pressed]}><Text style={[styles.cadenceText, cadence === key && styles.cadenceTextActive]}>{cadenceLabels[key]}</Text></Pressable>)}</View></View>
             <View style={styles.guidanceCard}><View style={styles.guidanceRow}><View style={styles.guidanceNumber}><Text style={styles.guidanceValue}>{currency(metrics.salesRequired)} ج.م</Text><Text style={styles.guidanceCaption}>بيع {cadenceLabels[cadence]}</Text></View><View style={[styles.guidanceIcon, { backgroundColor: "#FCF1DD" }]}><MaterialIcons name="trending-up" color="#C47B12" size={21} /></View></View><View style={styles.guidanceDivider} /><View style={styles.guidanceRow}><View style={styles.guidanceNumber}><Text style={styles.guidanceValue}>{currency(metrics.collectionRequired)} ج.م</Text><Text style={styles.guidanceCaption}>تحصيل {cadenceLabels[cadence]}</Text></View><View style={[styles.guidanceIcon, { backgroundColor: "#F4EDF6" }]}><MaterialIcons name="account-balance-wallet" color="#4A1E53" size={21} /></View></View></View>
 
-            <View style={styles.quickActions}><View style={styles.quickHalf}><PrimaryButton label="تسجيل تحصيل" onPress={() => router.push("/collection")} icon="payments" /></View><View style={styles.quickHalf}><PrimaryButton label="تسجيل بيع" onPress={() => router.push("/sale")} icon="add-shopping-cart" /></View></View>
+            <SectionTitle title="تسجيل سريع" detail="دون عميل أو منتج" />
+            <View style={styles.quickActions}><View style={styles.quickHalf}><PrimaryButton label="تحصيل سريع" onPress={() => router.push({ pathname: "/quick-entry", params: { type: "collection" } })} icon="payments" /></View><View style={styles.quickHalf}><PrimaryButton label="بيع سريع" onPress={() => router.push({ pathname: "/quick-entry", params: { type: "sale" } })} icon="trending-up" /></View></View>
+            <View style={styles.detailedActions}><Pressable onPress={() => router.push("/collection")} style={({ pressed }) => [styles.detailLink, pressed && styles.pressed]}><Text style={styles.detailLinkText}>تسجيل تحصيل تفصيلي</Text></Pressable><Pressable onPress={() => router.push("/sale")} style={({ pressed }) => [styles.detailLink, pressed && styles.pressed]}><Text style={styles.detailLinkText}>تسجيل بيع تفصيلي</Text></Pressable></View>
 
             <SectionTitle title="المنتجات التي تحتاج متابعة" detail="عرض الكمية" />
             {priorityProducts.length === 0 ? <View style={styles.notice}><MaterialIcons name="inventory-2" size={20} color="#766C79" /><Text style={styles.noticeText}>أضف أهداف كمية للمنتجات لتظهر المتابعة هنا.</Text></View> : priorityProducts.map(({ product, sold }) => { const remaining = Math.max(0, product.quantityTarget - sold); const progress = product.quantityTarget > 0 ? (sold / product.quantityTarget) * 100 : 0; return <View style={styles.productCard} key={product.id}><View style={styles.productHeader}><View style={styles.productNumbers}><Text style={styles.remaining}>{remaining.toLocaleString("ar-EG")} متبقي</Text><Text style={styles.productMeta}>من {product.quantityTarget.toLocaleString("ar-EG")} وحدة</Text></View><Text style={styles.productName}>{product.name}</Text></View><ProgressBar value={progress} color={progress >= 80 ? "#2E7D5B" : "#E89B2C"} /></View>; })}
@@ -75,8 +79,11 @@ const styles = StyleSheet.create({
   guidanceCaption: { color: "#766C79", fontSize: 12, marginTop: 2 },
   guidanceIcon: { width: 41, height: 41, borderRadius: 14, alignItems: "center", justifyContent: "center" },
   guidanceDivider: { height: 1, backgroundColor: "#EFE8F0" },
-  quickActions: { flexDirection: "row-reverse", gap: 10, marginBottom: 24 },
+  quickActions: { flexDirection: "row-reverse", gap: 10, marginBottom: 9 },
   quickHalf: { flex: 1 },
+  detailedActions: { flexDirection: "row-reverse", gap: 10, marginBottom: 24 },
+  detailLink: { flex: 1, alignItems: "center", paddingVertical: 7 },
+  detailLinkText: { color: "#4A1E53", fontSize: 12, fontWeight: "800", textDecorationLine: "underline" },
   notice: { flexDirection: "row-reverse", gap: 9, alignItems: "center", backgroundColor: "#F5F1F5", padding: 15, borderRadius: 16 },
   noticeText: { color: "#766C79", flex: 1, fontSize: 13, textAlign: "right" },
   productCard: { backgroundColor: "#FFFFFF", borderColor: "#E8DFE9", borderWidth: 1, borderRadius: 16, padding: 14, gap: 12, marginBottom: 9 },

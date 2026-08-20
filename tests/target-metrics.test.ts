@@ -52,6 +52,19 @@ describe("quarterly target calculations", () => {
     expect(productQuantity(data, "p1", target)).toBe(8);
   });
 
+  it("counts fast entries without a customer or product in the active target", () => {
+    const withFastEntries: AppData = {
+      ...data,
+      sales: [...data.sales, { id: "quick-sale", customerId: "", productId: "", quantity: 0, unitPrice: 250, discount: 0, total: 250, date: "2026-03-02", note: "إدخال سريع" }],
+      collections: [...data.collections, { id: "quick-collection", customerId: "", amount: 300, date: "2026-03-02", note: "إدخال سريع" }],
+    };
+    const metrics = getTargetMetrics(withFastEntries, target, "daily", new Date("2026-03-03T12:00:00"));
+    expect(metrics.salesActual).toBe(650);
+    expect(metrics.collectionActual).toBe(500);
+    expect(metrics.salesProgress).toBe(65);
+    expect(metrics.collectionProgress).toBeCloseTo(62.5, 8);
+  });
+
   it("normalizes malformed numeric data before it is saved locally", () => {
     const normalized = normalizeAppData({
       targets: [{ ...target, salesTarget: "1250", collectionTarget: "not-a-number" }],
