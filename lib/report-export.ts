@@ -15,7 +15,7 @@ let logoDataUri: Promise<string> | undefined;
 function getEmbeddedLogo() {
   if (!logoDataUri) {
     logoDataUri = (async () => {
-      const asset = Asset.fromModule(require("@/assets/images/mavet-target-icon.png"));
+      const asset = Asset.fromModule(require("@/assets/images/mavet-target-icon-v2.png"));
       await asset.downloadAsync();
       const uri = asset.localUri ?? asset.uri;
       const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });

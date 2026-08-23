@@ -20,7 +20,7 @@ export function AppHeader({ title, subtitle, logoCaption, action, compact = fals
       </View>
       <View style={styles.headerSide}>
         {action}
-        <View style={styles.logoStack}><Image source={require("@/assets/images/mavet-target-ui-logo.webp")} style={styles.logo} contentFit="contain" />{logoCaption ? <Text style={styles.logoCaption}>{logoCaption}</Text> : null}</View>
+        <View style={styles.logoStack}><Image source={require("@/assets/images/mavet-target-ui-logo-v2.png")} style={styles.logo} contentFit="contain" />{logoCaption ? <Text style={styles.logoCaption}>{logoCaption}</Text> : null}</View>
       </View>
     </View>
   );
