@@ -34,9 +34,9 @@ export function SectionTitle({ title, detail }: { title: string; detail?: string
   );
 }
 
-export function PrimaryButton({ label, onPress, icon = "add", disabled = false }: { label: string; onPress: () => void; icon?: React.ComponentProps<typeof MaterialIcons>["name"]; disabled?: boolean }) {
+export function PrimaryButton({ label, onPress, icon = "add", disabled = false, iconSide = "right" }: { label: string; onPress: () => void; icon?: React.ComponentProps<typeof MaterialIcons>["name"]; disabled?: boolean; iconSide?: "left" | "right" }) {
   return (
-    <Pressable onPress={onPress} disabled={disabled} style={({ pressed }) => [styles.primaryButton, (pressed || disabled) && styles.pressed, disabled && styles.disabled]}>
+    <Pressable onPress={onPress} disabled={disabled} style={({ pressed }) => [styles.primaryButton, iconSide === "left" ? styles.primaryButtonIconLeft : styles.primaryButtonIconRight, (pressed || disabled) && styles.pressed, disabled && styles.disabled]}>
       <MaterialIcons name={icon} size={19} color="#FFFFFF" />
       <Text style={styles.primaryText}>{label}</Text>
     </Pressable>
@@ -97,10 +97,10 @@ export function ProgressBar({ value, color = "#4A1E53" }: { value: number; color
   return <View style={styles.progressTrack}><View style={[styles.progressFill, { backgroundColor: color, width: `${Math.max(0, Math.min(100, value))}%` }]} /></View>;
 }
 
-export function MetricCard({ label, value, caption, accent = "#4A1E53", icon }: { label: string; value: string; caption?: string; accent?: string; icon: React.ComponentProps<typeof MaterialIcons>["name"] }) {
+export function MetricCard({ label, value, caption, accent = "#4A1E53", icon, iconSide = "right" }: { label: string; value: string; caption?: string; accent?: string; icon: React.ComponentProps<typeof MaterialIcons>["name"]; iconSide?: "left" | "right" }) {
   return (
     <View style={styles.metricCard}>
-      <View style={[styles.metricIcon, { backgroundColor: `${accent}18` }]}><MaterialIcons name={icon} color={accent} size={20} /></View>
+      <View style={[styles.metricIcon, iconSide === "left" ? styles.metricIconLeft : styles.metricIconRight, { backgroundColor: `${accent}18` }]}><MaterialIcons name={icon} color={accent} size={20} /></View>
       <Text style={styles.metricLabel}>{label}</Text>
       <Text style={[styles.metricValue, { color: accent }]}>{value}</Text>
       {caption ? <Text style={styles.metricCaption}>{caption}</Text> : null}
@@ -154,7 +154,9 @@ const styles = StyleSheet.create({
   sectionTitle: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
   sectionHeading: { color: "#1E1522", fontSize: 17, lineHeight: 24, fontWeight: "800", textAlign: "right" },
   sectionDetail: { color: "#4A1E53", fontSize: 13, fontWeight: "700" },
-  primaryButton: { flexDirection: "row-reverse", alignItems: "center", justifyContent: "center", alignSelf: "stretch", backgroundColor: "#4A1E53", minHeight: 52, borderRadius: 16, gap: 9, paddingHorizontal: 16 },
+  primaryButton: { alignItems: "center", justifyContent: "center", alignSelf: "stretch", backgroundColor: "#4A1E53", minHeight: 52, borderRadius: 16, gap: 9, paddingHorizontal: 16 },
+  primaryButtonIconRight: { flexDirection: "row-reverse" },
+  primaryButtonIconLeft: { flexDirection: "row" },
   primaryText: { color: "#FFFFFF", fontSize: 15, fontWeight: "800" },
   ghostButton: { flexDirection: "row-reverse", gap: 6, alignItems: "center", justifyContent: "center", minHeight: 40, borderWidth: 1, borderRadius: 13, paddingHorizontal: 12 },
   ghostText: { fontSize: 13, fontWeight: "800" },
@@ -172,7 +174,9 @@ const styles = StyleSheet.create({
   progressTrack: { height: 8, backgroundColor: "#F0EAF1", borderRadius: 8, overflow: "hidden" },
   progressFill: { height: "100%", borderRadius: 8 },
   metricCard: { flex: 1, minWidth: 0, padding: 13, gap: 5, backgroundColor: "#FFFFFF", borderColor: "#E8DFE9", borderWidth: 1, borderRadius: 17 },
-  metricIcon: { width: 34, height: 34, borderRadius: 12, alignItems: "center", justifyContent: "center", alignSelf: "flex-end" },
+  metricIcon: { width: 34, height: 34, borderRadius: 12, alignItems: "center", justifyContent: "center" },
+  metricIconRight: { alignSelf: "flex-end" },
+  metricIconLeft: { alignSelf: "flex-start" },
   metricLabel: { color: "#766C79", fontSize: 12, fontWeight: "700", textAlign: "right" },
   metricValue: { fontSize: 19, lineHeight: 25, fontWeight: "900", textAlign: "right" },
   metricCaption: { color: "#9A8E9E", fontSize: 11, textAlign: "right" },
