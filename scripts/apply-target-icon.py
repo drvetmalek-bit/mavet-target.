@@ -5,7 +5,7 @@ from PIL import Image
 
 source_path = Path("/home/ubuntu/upload/Mavettarget.webp")
 target_dir = Path(__file__).resolve().parent.parent / "assets" / "images"
-target_names = ["icon.png", "splash-icon.png", "favicon.png", "android-icon-foreground.png"]
+target_names = ["icon.png", "splash-icon.png", "favicon.png", "android-icon-foreground.png", "android-icon-monochrome.png", "mavet-target-icon.png"]
 
 with Image.open(source_path) as source:
     image = source.convert("RGBA")
@@ -19,3 +19,4 @@ with Image.open(source_path) as source:
     canvas.alpha_composite(icon, offset)
     for name in target_names:
         canvas.save(target_dir / name, format="PNG", optimize=True, compress_level=9)
+    Image.new("RGBA", (512, 512), "#FFFFFF").save(target_dir / "android-icon-background.png", format="PNG", optimize=True, compress_level=9)
