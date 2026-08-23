@@ -19,7 +19,7 @@ export function AppHeader({ title, subtitle, action, compact = false }: HeaderPr
       </View>
       <View style={styles.headerSide}>
         {action}
-        <Image source={require("@/assets/images/mavet-target-icon.png")} style={styles.logo} contentFit="contain" />
+        <Image source={require("@/assets/images/mavet-target-icon-v101.png")} style={styles.logo} contentFit="contain" />
       </View>
     </View>
   );

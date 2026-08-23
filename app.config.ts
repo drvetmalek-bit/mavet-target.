@@ -42,7 +42,7 @@ const config: ExpoConfig = {
   slug: env.appSlug,
   version: "1.0.1",
   orientation: "portrait",
-  icon: "./assets/images/mavet-target-icon.png",
+  icon: "./assets/images/mavet-target-icon-v101.png",
   scheme: env.scheme,
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
@@ -56,7 +56,7 @@ const config: ExpoConfig = {
   android: {
     adaptiveIcon: {
       backgroundColor: "#E6F4FE",
-      foregroundImage: "./assets/images/mavet-target-icon.png",
+      foregroundImage: "./assets/images/mavet-target-icon-v101.png",
       backgroundImage: "./assets/images/android-icon-background.png",
       monochromeImage: "./assets/images/android-icon-monochrome.png",
     },
@@ -81,7 +81,7 @@ const config: ExpoConfig = {
   web: {
     bundler: "metro",
     output: "static",
-    favicon: "./assets/images/mavet-target-icon.png",
+    favicon: "./assets/images/mavet-target-icon-v101.png",
   },
   plugins: [
     "expo-router",
@@ -101,7 +101,7 @@ const config: ExpoConfig = {
     [
       "expo-splash-screen",
       {
-        image: "./assets/images/mavet-target-icon.png",
+        image: "./assets/images/mavet-target-icon-v101.png",
         imageWidth: 200,
         resizeMode: "contain",
         backgroundColor: "#ffffff",
