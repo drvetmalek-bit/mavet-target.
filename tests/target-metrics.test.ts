@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { normalizeAppData, type AppData, type QuarterTarget } from "../lib/target-data";
+import { mergeCatalogue, normalizeAppData, quantityFormat, type AppData, type QuarterTarget } from "../lib/target-data";
 import { getTargetMetrics, productQuantity } from "../lib/target-metrics";
 import { buildTargetReport, isValidDateRange } from "../lib/reporting";
 import { createBackupPayload, readBackupPayload } from "../lib/backup-format";
@@ -27,6 +27,7 @@ const data: AppData = {
     { id: "c1", customerId: "c1", amount: 200, date: "2026-02-11" },
     { id: "c2", customerId: "c1", amount: 100, date: "2026-04-03" },
   ],
+  inventoryCounts: [],
 };
 
 describe("quarterly target calculations", () => {
@@ -110,5 +111,18 @@ describe("quarterly target calculations", () => {
     expect(restored.targets).toHaveLength(1);
     expect(restored.sales).toHaveLength(2);
     expect(() => readBackupPayload(JSON.stringify({ format: "other", version: 1, data }))).toThrow("Mavet Target");
+  });
+
+  it("adds the supplied product catalogue once and keeps English grouped numbers", () => {
+    const catalogue = mergeCatalogue([{ id: "manual", name: "نوبيوتيك", packSize: "1 لتر", category: "imported", unitPrice: 0, quantityTarget: 0, createdAt: target.createdAt }]);
+    expect(catalogue.filter((product) => product.name === "نوبيوتيك" && product.packSize === "1 لتر")).toHaveLength(1);
+    expect(catalogue).toHaveLength(11);
+    expect(quantityFormat(1234567.5)).toBe("1,234,567.5");
+  });
+
+  it("normalizes inventory entries for local stock counts", () => {
+    const normalized = normalizeAppData({ inventoryCounts: [{ id: "stock-1", title: "جرد", date: "2026-03-01", createdAt: target.createdAt, updatedAt: target.createdAt, entries: [{ productId: "p1", quantity: "12", expiryDate: "2027-03-01" }] }] });
+    expect(normalized.inventoryCounts[0].entries[0].quantity).toBe(12);
+    expect(normalized.inventoryCounts[0].entries[0].expiryDate).toBe("2027-03-01");
   });
 });

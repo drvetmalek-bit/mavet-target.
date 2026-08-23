@@ -31,6 +31,7 @@ const MAPPING = {
   "calendar": "calendar-month",
   "circle.fill": "circle",
   "doc.text.fill": "summarize",
+  "archivebox.fill": "inventory",
 } as IconMapping;
 
 /**

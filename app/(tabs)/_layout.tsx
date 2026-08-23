@@ -15,6 +15,7 @@ export default function TabLayout() {
       <Tabs.Screen name="index" options={{ title: "الرئيسية", tabBarIcon: ({ color }) => <IconSymbol size={25} name="chart.bar.fill" color={color} /> }} />
       <Tabs.Screen name="customers" options={{ title: "العملاء", tabBarIcon: ({ color }) => <IconSymbol size={25} name="person.2.fill" color={color} /> }} />
       <Tabs.Screen name="products" options={{ title: "المنتجات", tabBarIcon: ({ color }) => <IconSymbol size={25} name="shippingbox.fill" color={color} /> }} />
+      <Tabs.Screen name="inventory" options={{ title: "الجرد", tabBarIcon: ({ color }) => <IconSymbol size={25} name="archivebox.fill" color={color} /> }} />
       <Tabs.Screen name="reports" options={{ title: "التقارير", tabBarIcon: ({ color }) => <IconSymbol size={25} name="doc.text.fill" color={color} /> }} />
       <Tabs.Screen name="settings" options={{ title: "الإعدادات", tabBarIcon: ({ color }) => <IconSymbol size={25} name="gearshape.fill" color={color} /> }} />
     </Tabs>

@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { AppHeader, EmptyState, IconAction, MetricCard, PrimaryButton, ProgressBar, SectionTitle } from "@/components/mavet-ui";
-import { currency, quarterDates } from "@/lib/target-data";
+import { currency, quantityFormat, quarterDates } from "@/lib/target-data";
 import { productQuantity, getTargetMetrics } from "@/lib/target-metrics";
 import { useTargetStore } from "@/lib/target-store";
 import { ScreenContainer } from "@/components/screen-container";
@@ -25,7 +25,7 @@ export default function HomeScreen() {
         ) : (
           <>
             <View style={styles.targetCard}>
-              <View style={styles.targetTop}><View><Text style={styles.cardEyebrow}>متابعة الربع الحالي</Text><Text style={styles.targetTitle}>ينتهي في {quarterDates(activeTarget).end}</Text></View><View style={styles.daysBadge}><Text style={styles.daysNumber}>{metrics.daysRemaining}</Text><Text style={styles.daysLabel}>يوم متبقي</Text></View></View>
+              <View style={styles.targetTop}><View><Text style={styles.cardEyebrow}>متابعة الربع الحالي</Text><Text style={styles.targetTitle}>ينتهي في {quarterDates(activeTarget).end}</Text></View><View style={styles.daysBadge}><Text style={styles.daysNumber}>{quantityFormat(metrics.daysRemaining)}</Text><Text style={styles.daysLabel}>يوم متبقي</Text></View></View>
               <View style={styles.progressBlock}><View style={styles.progressLine}><Text style={styles.percent}>{Math.round(metrics.salesProgress)}%</Text><Text style={styles.progressLabel}>إنجاز البيع</Text></View><ProgressBar value={metrics.salesProgress} color="#E89B2C" /></View>
               <View style={styles.progressBlock}><View style={styles.progressLine}><Text style={styles.percent}>{Math.round(metrics.collectionProgress)}%</Text><Text style={styles.progressLabel}>إنجاز التحصيل</Text></View><ProgressBar value={metrics.collectionProgress} color="#36B889" /></View>
             </View>
@@ -45,7 +45,7 @@ export default function HomeScreen() {
             <View style={styles.detailedActions}><Pressable onPress={() => router.push("/collection")} style={({ pressed }) => [styles.detailLink, pressed && styles.pressed]}><Text style={styles.detailLinkText}>تسجيل تحصيل تفصيلي</Text></Pressable><Pressable onPress={() => router.push("/sale")} style={({ pressed }) => [styles.detailLink, pressed && styles.pressed]}><Text style={styles.detailLinkText}>تسجيل بيع تفصيلي</Text></Pressable></View>
 
             <SectionTitle title="المنتجات التي تحتاج متابعة" detail="عرض الكمية" />
-            {priorityProducts.length === 0 ? <View style={styles.notice}><MaterialIcons name="inventory-2" size={20} color="#766C79" /><Text style={styles.noticeText}>أضف أهداف كمية للمنتجات لتظهر المتابعة هنا.</Text></View> : priorityProducts.map(({ product, sold }) => { const remaining = Math.max(0, product.quantityTarget - sold); const progress = product.quantityTarget > 0 ? (sold / product.quantityTarget) * 100 : 0; return <View style={styles.productCard} key={product.id}><View style={styles.productHeader}><View style={styles.productNumbers}><Text style={styles.remaining}>{remaining.toLocaleString("ar-EG")} متبقي</Text><Text style={styles.productMeta}>من {product.quantityTarget.toLocaleString("ar-EG")} وحدة</Text></View><Text style={styles.productName}>{product.name}</Text></View><ProgressBar value={progress} color={progress >= 80 ? "#2E7D5B" : "#E89B2C"} /></View>; })}
+            {priorityProducts.length === 0 ? <View style={styles.notice}><MaterialIcons name="inventory-2" size={20} color="#766C79" /><Text style={styles.noticeText}>أضف أهداف كمية للمنتجات لتظهر المتابعة هنا.</Text></View> : priorityProducts.map(({ product, sold }) => { const remaining = Math.max(0, product.quantityTarget - sold); const progress = product.quantityTarget > 0 ? (sold / product.quantityTarget) * 100 : 0; return <View style={styles.productCard} key={product.id}><View style={styles.productHeader}><View style={styles.productNumbers}><Text style={styles.remaining}>{quantityFormat(remaining)} متبقي</Text><Text style={styles.productMeta}>من {quantityFormat(product.quantityTarget)} وحدة</Text></View><Text style={styles.productName}>{product.name}</Text></View><ProgressBar value={progress} color={progress >= 80 ? "#2E7D5B" : "#E89B2C"} /></View>; })}
           </>
         )}
       </ScrollView>

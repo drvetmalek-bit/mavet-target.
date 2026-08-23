@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { AppHeader, EmptyState, PrimaryButton } from "@/components/mavet-ui";
-import { currency, quarterDates } from "@/lib/target-data";
+import { currency, quantityFormat, quarterDates } from "@/lib/target-data";
 import { useTargetStore } from "@/lib/target-store";
 import { ScreenContainer } from "@/components/screen-container";
 
@@ -14,7 +14,7 @@ export default function CustomersScreen() {
   const filtered = useMemo(() => customers.filter((customer) => customer.name.toLocaleLowerCase("ar").includes(query.trim().toLocaleLowerCase("ar"))), [customers, query]);
   const range = activeTarget ? quarterDates(activeTarget) : undefined;
   const totals = (id: string) => ({ sales: sales.filter((sale) => sale.customerId === id && (!range || (sale.date >= range.start && sale.date <= range.end))).reduce((sum, sale) => sum + sale.total, 0), collections: collections.filter((item) => item.customerId === id && (!range || (item.date >= range.start && item.date <= range.end))).reduce((sum, item) => sum + item.amount, 0) });
-  const header = <><AppHeader title="العملاء" subtitle={`${customers.length.toLocaleString("ar-EG")} عميل محفوظ محلياً`} /><PrimaryButton label="إضافة عميل" onPress={() => router.push("/customer-form")} /><View style={styles.search}><MaterialIcons name="search" color="#766C79" size={20} /><TextInput value={query} onChangeText={setQuery} placeholder="ابحث باسم العميل" placeholderTextColor="#A49AA7" style={styles.searchInput} textAlign="right" /></View></>;
+  const header = <><AppHeader title="العملاء" subtitle={`${quantityFormat(customers.length)} عميل محفوظ محلياً`} /><PrimaryButton label="إضافة عميل" onPress={() => router.push("/customer-form")} /><View style={styles.search}><MaterialIcons name="search" color="#766C79" size={20} /><TextInput value={query} onChangeText={setQuery} placeholder="ابحث باسم العميل" placeholderTextColor="#A49AA7" style={styles.searchInput} textAlign="right" /></View></>;
   const emptyState = <EmptyState icon="group-add" title={query ? "لا يوجد عميل مطابق" : "لا يوجد عملاء بعد"} description={query ? "جرّب اسم عميل آخر." : "أضف أول عميل لتسجيل البيع والتحصيل عليه."} />;
   const renderCustomer = ({ item }: { item: (typeof customers)[number] }) => {
     const total = totals(item.id);
