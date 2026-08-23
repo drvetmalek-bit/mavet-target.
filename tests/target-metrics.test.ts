@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { normalizeAppData, type AppData, type QuarterTarget } from "../lib/target-data";
 import { getTargetMetrics, productQuantity } from "../lib/target-metrics";
 import { buildTargetReport, isValidDateRange } from "../lib/reporting";
+import { createBackupPayload, readBackupPayload } from "../lib/backup-format";
 
 const target: QuarterTarget = {
   id: "q1-2026",
@@ -101,5 +102,13 @@ describe("quarterly target calculations", () => {
     expect(normalized.products[0].quantityTarget).toBe(0);
     expect(normalized.sales[0].total).toBe(146);
     expect(normalizeAppData({ representative: { name: "مندوب", phone: "0123", territory: "الإسكندرية" } }).representative).toEqual({ name: "مندوب", phone: "0123", territory: "الإسكندرية" });
+  });
+
+  it("creates and validates a complete local backup without accepting foreign files", () => {
+    const payload = createBackupPayload(data);
+    const restored = readBackupPayload(JSON.stringify(payload));
+    expect(restored.targets).toHaveLength(1);
+    expect(restored.sales).toHaveLength(2);
+    expect(() => readBackupPayload(JSON.stringify({ format: "other", version: 1, data }))).toThrow("Mavet Target");
   });
 });

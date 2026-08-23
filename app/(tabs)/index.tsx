@@ -12,14 +12,14 @@ const cadenceLabels = { daily: "يومي", weekly: "أسبوعي", monthly: "ش�
 
 export default function HomeScreen() {
   const store = useTargetStore();
-  const { activeTarget, cadence, setCadence, products } = store;
+  const { activeTarget, cadence, setCadence, products, representative } = store;
   const metrics = getTargetMetrics(store, activeTarget, cadence);
   const priorityProducts = activeTarget ? products.filter((product) => product.quantityTarget > 0).map((product) => ({ product, sold: productQuantity(store, product.id, activeTarget) })).sort((a, b) => (b.product.quantityTarget - b.sold) - (a.product.quantityTarget - a.sold)).slice(0, 3) : [];
 
   return (
     <ScreenContainer className="px-5" containerClassName="bg-background">
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <AppHeader title="Mavet Target" subtitle={activeTarget ? `الربع ${activeTarget.quarter} • ${activeTarget.year}` : "متابعة أهدافك الربع سنوية"} action={<IconAction icon="settings" label="الإعدادات" onPress={() => router.push("/(tabs)/settings")} />} />
+        <AppHeader title="Mavet Target" subtitle={activeTarget ? `الربع ${activeTarget.quarter} • ${activeTarget.year}` : "متابعة أهدافك الربع سنوية"} logoCaption={representative?.name} action={<IconAction icon="settings" label="الإعدادات" onPress={() => router.push("/(tabs)/settings")} />} />
         {!activeTarget ? (
           <EmptyState icon="flag" title="ابدأ بتحديد تارجت الربع" description="أدخل تارجت البيع والتحصيل للربع الميلادي الحالي، ثم أضف العملاء والمنتجات." action={<PrimaryButton label="إعداد التارجت" onPress={() => router.push("/target-settings")} icon="tune" />} />
         ) : (

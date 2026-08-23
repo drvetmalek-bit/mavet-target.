@@ -9,6 +9,7 @@ import {
   type QuarterTarget,
   type RepresentativeProfile,
   type Sale,
+  normalizeAppData,
   EMPTY_DATA,
   loadAppData,
   storeAppData,
@@ -30,6 +31,7 @@ type TargetStore = AppData & {
   addCollection: (collection: Collection) => void;
   deleteSale: (id: string) => void;
   deleteCollection: (id: string) => void;
+  restoreAll: (backup: AppData) => void;
   resetAll: () => void;
 };
 
@@ -92,6 +94,7 @@ export function TargetProvider({ children }: PropsWithChildren) {
       addCollection: (collection) => setData((current) => ({ ...current, collections: [collection, ...current.collections] })),
       deleteSale: (id) => setData((current) => ({ ...current, sales: current.sales.filter((item) => item.id !== id) })),
       deleteCollection: (id) => setData((current) => ({ ...current, collections: current.collections.filter((item) => item.id !== id) })),
+      restoreAll: (backup) => setData(normalizeAppData(backup)),
       resetAll: () => setData(EMPTY_DATA),
     };
   }, [cadence, data, isLoaded]);

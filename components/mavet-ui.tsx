@@ -6,11 +6,12 @@ import { Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-nativ
 type HeaderProps = {
   title: string;
   subtitle?: string;
+  logoCaption?: string;
   action?: ReactNode;
   compact?: boolean;
 };
 
-export function AppHeader({ title, subtitle, action, compact = false }: HeaderProps) {
+export function AppHeader({ title, subtitle, logoCaption, action, compact = false }: HeaderProps) {
   return (
     <View style={[styles.header, compact && styles.headerCompact]}>
       <View style={styles.headerText}>
@@ -19,7 +20,7 @@ export function AppHeader({ title, subtitle, action, compact = false }: HeaderPr
       </View>
       <View style={styles.headerSide}>
         {action}
-        <Image source={require("@/assets/images/mavet-target-icon-v101.png")} style={styles.logo} contentFit="contain" />
+        <View style={styles.logoStack}><Image source={require("@/assets/images/mavet-target-ui-logo.webp")} style={styles.logo} contentFit="contain" />{logoCaption ? <Text style={styles.logoCaption}>{logoCaption}</Text> : null}</View>
       </View>
     </View>
   );
@@ -150,7 +151,9 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 25, lineHeight: 32, color: "#1E1522", fontWeight: "800", textAlign: "right" },
   headerSubtitle: { fontSize: 13, color: "#766C79", marginTop: 2, textAlign: "right" },
   headerSide: { flexDirection: "row", alignItems: "center", gap: 10 },
-  logo: { width: 76, height: 38 },
+  logoStack: { alignItems: "center", maxWidth: 98 },
+  logo: { width: 94, height: 54 },
+  logoCaption: { color: "#4A1E53", fontSize: 10, lineHeight: 14, fontWeight: "800", textAlign: "center", marginTop: -2, maxWidth: 98 },
   sectionTitle: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
   sectionHeading: { color: "#1E1522", fontSize: 17, lineHeight: 24, fontWeight: "800", textAlign: "right" },
   sectionDetail: { color: "#4A1E53", fontSize: 13, fontWeight: "700" },
