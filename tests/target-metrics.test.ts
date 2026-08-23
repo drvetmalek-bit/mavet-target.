@@ -28,6 +28,7 @@ const data: AppData = {
     { id: "c1", customerId: "c1", amount: 200, date: "2026-02-11" },
     { id: "c2", customerId: "c1", amount: 100, date: "2026-04-03" },
   ],
+  cashOpeningBalance: 0,
   cashMovements: [],
   inventoryCounts: [],
 };
@@ -137,7 +138,17 @@ describe("quarterly target calculations", () => {
   });
 
   it("calculates expected cash from collections, deposits, and expenses", () => {
-    const cash = getCashSummary({ ...data, cashMovements: [{ id: "d1", type: "deposit", amount: 120, date: "2026-02-12", description: "توريد بنكي", createdAt: target.createdAt }, { id: "e1", type: "expense", amount: 30, date: "2026-02-13", description: "مصروف", createdAt: target.createdAt }] });
-    expect(cash).toEqual({ collections: 300, deposits: 120, expenses: 30, expectedCash: 150 });
+    const cash = getCashSummary({ ...data, cashOpeningBalance: 50, cashMovements: [{ id: "d1", type: "deposit", amount: 120, date: "2026-02-12", description: "توريد بنكي", createdAt: target.createdAt }, { id: "e1", type: "expense", amount: 30, date: "2026-02-13", description: "مصروف", createdAt: target.createdAt }] });
+    expect(cash).toEqual({ openingBalance: 50, collections: 300, deposits: 120, expenses: 30, expectedCash: 200 });
+  });
+
+  it("requires a collection linked to NobioTek invoices before paying its commission", () => {
+    const nobioSale = { id: "nobio-sale", customerId: "c1", productId: "nobio", quantity: 250, unitPrice: 10, discount: 0, total: 2500, date: "2026-02-20" };
+    const nobioData: AppData = { ...data, products: [...data.products, { id: "nobio", name: "نوبيوتيك", packSize: "1 لتر", category: "imported", unitPrice: 10, quantityTarget: 0, createdAt: target.createdAt }], sales: [...data.sales, nobioSale] };
+    expect(getCommissionSummary(nobioData, target).nobioteKCommission).toBe(0);
+    const collected = { ...nobioData, collections: [...nobioData.collections, { id: "nobio-collection", customerId: "c1", saleId: nobioSale.id, productId: "nobio", amount: 2500, date: "2026-02-25" }] };
+    const commission = getCommissionSummary(collected, target);
+    expect(commission.nobioteKIsCollected).toBe(true);
+    expect(commission.nobioteKCommission).toBe(6250);
   });
 });

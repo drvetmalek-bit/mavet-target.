@@ -35,6 +35,7 @@ type TargetStore = AppData & {
   upsertStockCount: (count: StockCount) => void;
   latestStockForProduct: (productId: string) => { hasCount: boolean; quantity: number; countId?: string; entry?: StockCountEntry };
   addCollection: (collection: Collection) => void;
+  setCashOpeningBalance: (amount: number) => void;
   addCashMovement: (movement: CashMovement) => void;
   deleteCashMovement: (id: string) => void;
   deleteSale: (id: string) => void;
@@ -113,6 +114,7 @@ export function TargetProvider({ children }: PropsWithChildren) {
         return entry ? { hasCount: true, quantity: entry.quantity, countId: latest?.id, entry } : { hasCount: false, quantity: 0 };
       },
       addCollection: (collection) => setData((current) => ({ ...current, collections: [collection, ...current.collections] })),
+      setCashOpeningBalance: (amount) => setData((current) => ({ ...current, cashOpeningBalance: Math.max(0, amount) })),
       addCashMovement: (movement) => setData((current) => ({ ...current, cashMovements: [movement, ...current.cashMovements] })),
       deleteCashMovement: (id) => setData((current) => ({ ...current, cashMovements: current.cashMovements.filter((movement) => movement.id !== id) })),
       deleteSale: (id) => setData((current) => {
