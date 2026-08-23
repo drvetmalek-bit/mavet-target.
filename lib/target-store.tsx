@@ -3,6 +3,7 @@ import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useSt
 import {
   type AppData,
   type Cadence,
+  type CashMovement,
   type Collection,
   type Customer,
   type Product,
@@ -34,6 +35,8 @@ type TargetStore = AppData & {
   upsertStockCount: (count: StockCount) => void;
   latestStockForProduct: (productId: string) => { hasCount: boolean; quantity: number; countId?: string; entry?: StockCountEntry };
   addCollection: (collection: Collection) => void;
+  addCashMovement: (movement: CashMovement) => void;
+  deleteCashMovement: (id: string) => void;
   deleteSale: (id: string) => void;
   deleteCollection: (id: string) => void;
   restoreAll: (backup: AppData) => void;
@@ -110,6 +113,8 @@ export function TargetProvider({ children }: PropsWithChildren) {
         return entry ? { hasCount: true, quantity: entry.quantity, countId: latest?.id, entry } : { hasCount: false, quantity: 0 };
       },
       addCollection: (collection) => setData((current) => ({ ...current, collections: [collection, ...current.collections] })),
+      addCashMovement: (movement) => setData((current) => ({ ...current, cashMovements: [movement, ...current.cashMovements] })),
+      deleteCashMovement: (id) => setData((current) => ({ ...current, cashMovements: current.cashMovements.filter((movement) => movement.id !== id) })),
       deleteSale: (id) => setData((current) => {
         const removed = current.sales.find((item) => item.id === id);
         if (!removed?.inventoryCountId) return { ...current, sales: current.sales.filter((item) => item.id !== id) };

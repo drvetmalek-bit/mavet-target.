@@ -13,7 +13,7 @@ export default function SettingsScreen() {
   const { activeTarget, targets, setActiveTargetId, resetAll, restoreAll } = store;
   const [picker, setPicker] = useState(false);
   const [backupBusy, setBackupBusy] = useState(false);
-  const snapshot = () => ({ activeTargetId: store.activeTargetId, representative: store.representative, targets: store.targets, customers: store.customers, products: store.products, sales: store.sales, collections: store.collections, inventoryCounts: store.inventoryCounts });
+  const snapshot = () => ({ activeTargetId: store.activeTargetId, representative: store.representative, targets: store.targets, customers: store.customers, products: store.products, sales: store.sales, collections: store.collections, cashMovements: store.cashMovements, inventoryCounts: store.inventoryCounts });
   const reset = () => Alert.alert("مسح كل البيانات؟", "سيتم حذف التارجت والعملاء والمنتجات والعمليات المخزنة على هذا الهاتف فقط. لا يمكن التراجع عن ذلك.", [{ text: "إلغاء", style: "cancel" }, { text: "مسح البيانات", style: "destructive", onPress: resetAll }]);
   const exportBackup = async () => {
     try { setBackupBusy(true); await createAndShareBackup(snapshot()); Alert.alert("تم إنشاء النسخة", "اختر الآن مكان حفظ ملف النسخة الاحتياطية من نافذة المشاركة."); }

@@ -32,6 +32,7 @@ const MAPPING = {
   "circle.fill": "circle",
   "doc.text.fill": "summarize",
   "archivebox.fill": "inventory",
+  "banknote.fill": "account-balance-wallet",
 } as IconMapping;
 
 /**

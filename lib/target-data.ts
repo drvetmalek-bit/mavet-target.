@@ -18,6 +18,7 @@ export type Product = {
 
 export type Sale = { id: string; customerId: string; productId: string; quantity: number; unitPrice: number; discount: number; total: number; date: string; note?: string; inventoryCountId?: string };
 export type Collection = { id: string; customerId: string; amount: number; date: string; note?: string };
+export type CashMovement = { id: string; type: "deposit" | "expense"; amount: number; date: string; description: string; createdAt: string };
 export type StockCountEntry = { productId: string; quantity: number; expiryDate?: string; note?: string };
 export type StockCount = { id: string; title: string; date: string; entries: StockCountEntry[]; createdAt: string; updatedAt: string };
 
@@ -29,6 +30,7 @@ export type AppData = {
   products: Product[];
   sales: Sale[];
   collections: Collection[];
+  cashMovements: CashMovement[];
   inventoryCounts: StockCount[];
 };
 
@@ -47,7 +49,7 @@ export const PRODUCT_CATALOGUE: Array<Pick<Product, "name" | "packSize" | "categ
 ];
 
 const STORAGE_KEY = "mavet-target-data-v1";
-export const EMPTY_DATA: AppData = { targets: [], customers: [], products: [], sales: [], collections: [], inventoryCounts: [] };
+export const EMPTY_DATA: AppData = { targets: [], customers: [], products: [], sales: [], collections: [], cashMovements: [], inventoryCounts: [] };
 const toNumber = (value: unknown) => { const parsed = Number(value); return Number.isFinite(parsed) ? parsed : 0; };
 const isCategory = (value: unknown): value is Product["category"] => value === "imported" || value === "egyptian" || value === "custom";
 
@@ -63,6 +65,7 @@ export function normalizeAppData(value: unknown): AppData {
     products: Array.isArray(raw.products) ? raw.products.map((product) => ({ ...product, packSize: typeof product.packSize === "string" ? product.packSize : undefined, category: isCategory(product.category) ? product.category : "custom", unitPrice: toNumber(product.unitPrice), quantityTarget: toNumber(product.quantityTarget) })) : [],
     sales: Array.isArray(raw.sales) ? raw.sales.map((sale) => ({ ...sale, quantity: toNumber(sale.quantity), unitPrice: toNumber(sale.unitPrice), discount: toNumber(sale.discount), total: toNumber(sale.total) })) : [],
     collections: Array.isArray(raw.collections) ? raw.collections.map((collection) => ({ ...collection, amount: toNumber(collection.amount) })) : [],
+    cashMovements: Array.isArray(raw.cashMovements) ? raw.cashMovements.filter((movement): movement is CashMovement => Boolean(movement && (movement.type === "deposit" || movement.type === "expense"))).map((movement) => ({ id: String(movement.id ?? uid("cash")), type: movement.type, amount: toNumber(movement.amount), date: typeof movement.date === "string" ? movement.date : localDate(), description: typeof movement.description === "string" ? movement.description : "", createdAt: typeof movement.createdAt === "string" ? movement.createdAt : new Date().toISOString() })) : [],
     inventoryCounts: Array.isArray(raw.inventoryCounts) ? raw.inventoryCounts.map((count) => ({ ...count, title: typeof count.title === "string" ? count.title : "جرد مخزن", date: typeof count.date === "string" ? count.date : localDate(), createdAt: typeof count.createdAt === "string" ? count.createdAt : new Date().toISOString(), updatedAt: typeof count.updatedAt === "string" ? count.updatedAt : new Date().toISOString(), entries: Array.isArray(count.entries) ? count.entries.map((entry) => ({ productId: String(entry.productId ?? ""), quantity: toNumber(entry.quantity), expiryDate: typeof entry.expiryDate === "string" ? entry.expiryDate : undefined, note: typeof entry.note === "string" ? entry.note : undefined })) : [] })) : [],
   };
 }

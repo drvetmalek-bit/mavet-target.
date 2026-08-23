@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { mergeCatalogue, normalizeAppData, quantityFormat, type AppData, type QuarterTarget } from "../lib/target-data";
+import { getCashSummary, getCommissionSummary } from "../lib/commissions";
 import { getTargetMetrics, productQuantity } from "../lib/target-metrics";
 import { buildTargetReport, isValidDateRange } from "../lib/reporting";
 import { createBackupPayload, readBackupPayload } from "../lib/backup-format";
@@ -27,6 +28,7 @@ const data: AppData = {
     { id: "c1", customerId: "c1", amount: 200, date: "2026-02-11" },
     { id: "c2", customerId: "c1", amount: 100, date: "2026-04-03" },
   ],
+  cashMovements: [],
   inventoryCounts: [],
 };
 
@@ -124,5 +126,18 @@ describe("quarterly target calculations", () => {
     const normalized = normalizeAppData({ inventoryCounts: [{ id: "stock-1", title: "جرد", date: "2026-03-01", createdAt: target.createdAt, updatedAt: target.createdAt, entries: [{ productId: "p1", quantity: "12", expiryDate: "2027-03-01" }] }] });
     expect(normalized.inventoryCounts[0].entries[0].quantity).toBe(12);
     expect(normalized.inventoryCounts[0].entries[0].expiryDate).toBe("2027-03-01");
+  });
+
+  it("only earns the 1% target commissions after both sales and collections reach 80%", () => {
+    const eligible = { ...data, sales: [...data.sales, { id: "sale-eligible", customerId: "c1", productId: "p1", quantity: 10, unitPrice: 50, discount: 0, total: 400, date: "2026-03-10" }], collections: [...data.collections, { id: "collection-eligible", customerId: "c1", amount: 500, date: "2026-03-10" }] };
+    const commission = getCommissionSummary(eligible, target);
+    expect(commission.bothTargetsEligible).toBe(true);
+    expect(commission.salesCommission).toBe(8);
+    expect(commission.collectionCommission).toBe(7);
+  });
+
+  it("calculates expected cash from collections, deposits, and expenses", () => {
+    const cash = getCashSummary({ ...data, cashMovements: [{ id: "d1", type: "deposit", amount: 120, date: "2026-02-12", description: "توريد بنكي", createdAt: target.createdAt }, { id: "e1", type: "expense", amount: 30, date: "2026-02-13", description: "مصروف", createdAt: target.createdAt }] });
+    expect(cash).toEqual({ collections: 300, deposits: 120, expenses: 30, expectedCash: 150 });
   });
 });

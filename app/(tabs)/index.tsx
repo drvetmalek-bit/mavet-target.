@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { AppHeader, EmptyState, IconAction, MetricCard, PrimaryButton, ProgressBar, SectionTitle } from "@/components/mavet-ui";
 import { currency, quantityFormat, quarterDates } from "@/lib/target-data";
+import { getCommissionSummary } from "@/lib/commissions";
 import { productQuantity, getTargetMetrics } from "@/lib/target-metrics";
 import { useTargetStore } from "@/lib/target-store";
 import { ScreenContainer } from "@/components/screen-container";
@@ -14,6 +15,7 @@ export default function HomeScreen() {
   const store = useTargetStore();
   const { activeTarget, cadence, setCadence, products, representative } = store;
   const metrics = getTargetMetrics(store, activeTarget, cadence);
+  const commissions = getCommissionSummary(store, activeTarget);
   const priorityProducts = activeTarget ? products.filter((product) => product.quantityTarget > 0).map((product) => ({ product, sold: productQuantity(store, product.id, activeTarget) })).sort((a, b) => (b.product.quantityTarget - b.sold) - (a.product.quantityTarget - a.sold)).slice(0, 3) : [];
 
   return (
@@ -35,6 +37,11 @@ export default function HomeScreen() {
             <SectionTitle title="المحقق ونسبة التحقيق" />
             <View style={styles.metricRow}><MetricCard label="المحقق من البيع" value={`${currency(metrics.salesActual)} ج.م`} caption={`${Math.round(metrics.salesProgress)}% من تارجت البيع`} accent="#E89B2C" icon="trending-up" iconSide="left" /><MetricCard label="المحقق من التحصيل" value={`${currency(metrics.collectionActual)} ج.م`} caption={`${Math.round(metrics.collectionProgress)}% من تارجت التحصيل`} accent="#198465" icon="account-balance-wallet" iconSide="right" /></View>
             <View style={styles.metricRow}><MetricCard label="متبقي للبيع" value={`${currency(metrics.salesRemaining)} ج.م`} caption={`تارجت ${currency(activeTarget.salesTarget)} ج.م`} accent="#C47B12" icon="flag" iconSide="left" /><MetricCard label="متبقي للتحصيل" value={`${currency(metrics.collectionRemaining)} ج.م`} caption={`تارجت ${currency(activeTarget.collectionTarget)} ج.م`} accent="#198465" icon="flag" iconSide="right" /></View>
+
+            <SectionTitle title="العمولات المستحقة" detail="تُحدّث تلقائياً" />
+            <View style={styles.metricRow}><MetricCard label="عمولة البيع" value={`${currency(commissions.salesCommission)} ج.م`} caption={commissions.bothTargetsEligible ? "1% من البيع المحقق" : "تبدأ بعد 80% من البيع والتحصيل"} accent="#C47B12" icon="trending-up" iconSide="left" /><MetricCard label="عمولة التحصيل" value={`${currency(commissions.collectionCommission)} ج.م`} caption={commissions.bothTargetsEligible ? "1% من التحصيل المحقق" : "تبدأ بعد 80% من البيع والتحصيل"} accent="#198465" icon="payments" iconSide="right" /></View>
+            <View style={styles.commissionNote}><MaterialIcons name="info-outline" size={18} color="#76530E" /><Text style={styles.commissionNoteText}>عمولة البيع والتحصيل تستحق فقط عند تحقيق 80% من البيع و80% من التحصيل معاً؛ لا تستحق عند تحقيق أحدهما فقط.</Text></View>
+            <View style={styles.nobioCard}><View style={styles.nobioHead}><View><Text style={styles.nobioTitle}>عمولة نوبيوتيك</Text><Text style={styles.nobioMeta}>{quantityFormat(commissions.nobioteKQuantity)} لتر • {commissions.nobioteKRate ? `${currency(commissions.nobioteKRate)} ج.م/لتر` : "تبدأ عند 250 لتر"}</Text></View><Text style={styles.nobioValue}>{currency(commissions.nobioteKCommission)} ج.م</Text></View><Text style={styles.nobioDetail}>{commissions.nobioteKQuantity >= 500 ? "50 ج.م لكل لتر عند 500 لتر فأكثر" : "25 ج.م لكل لتر عند 250–499 لتر"} • {commissions.nobioteKIsCollected ? "تحصيل الربع يغطي قيمة مبيعات نوبيوتيك" : "تُحتسب بعد تحصيل قيمة مبيعات نوبيوتيك"}</Text></View>
 
             <SectionTitle title="المطلوب لتحقيق التارجت" />
             <View style={styles.cadence}><Text style={styles.cadenceQuestion}>اعرض المطلوب:</Text><View style={styles.cadenceButtons}>{(Object.keys(cadenceLabels) as (keyof typeof cadenceLabels)[]).map((key) => <Pressable key={key} onPress={() => setCadence(key)} style={({ pressed }) => [styles.cadenceButton, cadence === key && styles.cadenceActive, pressed && styles.pressed]}><Text style={[styles.cadenceText, cadence === key && styles.cadenceTextActive]}>{cadenceLabels[key]}</Text></Pressable>)}</View></View>
@@ -71,6 +78,14 @@ const styles = StyleSheet.create({
   warningText: { flex: 1, alignItems: "flex-end" },
   warningTitle: { color: "#8A5105", fontSize: 13, fontWeight: "900", textAlign: "right" },
   warningDetail: { color: "#9B6A25", fontSize: 11, lineHeight: 17, marginTop: 3, textAlign: "right" },
+  commissionNote: { flexDirection: "row-reverse", alignItems: "center", gap: 8, backgroundColor: "#FFF8E8", borderWidth: 1, borderColor: "#F2D692", borderRadius: 14, padding: 12, marginTop: -13, marginBottom: 13 },
+  commissionNoteText: { flex: 1, color: "#76530E", fontSize: 11, lineHeight: 17, textAlign: "right" },
+  nobioCard: { backgroundColor: "#F4EDF6", borderWidth: 1, borderColor: "#DEC8E3", padding: 14, borderRadius: 17, marginBottom: 19 },
+  nobioHead: { flexDirection: "row-reverse", justifyContent: "space-between", alignItems: "center" },
+  nobioTitle: { color: "#4A1E53", fontSize: 15, fontWeight: "900", textAlign: "right" },
+  nobioMeta: { color: "#766C79", fontSize: 11, marginTop: 3, textAlign: "right" },
+  nobioValue: { color: "#4A1E53", fontSize: 19, fontWeight: "900" },
+  nobioDetail: { color: "#76530E", fontSize: 11, lineHeight: 17, textAlign: "right", marginTop: 10 },
   cadence: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#E8DFE9", borderRadius: 17, padding: 12, marginBottom: 10 },
   cadenceQuestion: { color: "#766C79", fontSize: 12, fontWeight: "700", textAlign: "right", marginBottom: 9 },
   cadenceButtons: { flexDirection: "row-reverse", gap: 7 },
