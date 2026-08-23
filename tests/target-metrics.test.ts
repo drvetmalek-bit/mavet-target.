@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { normalizeAppData, type AppData, type QuarterTarget } from "../lib/target-data";
 import { getTargetMetrics, productQuantity } from "../lib/target-metrics";
+import { buildTargetReport, isValidDateRange } from "../lib/reporting";
 
 const target: QuarterTarget = {
   id: "q1-2026",
@@ -63,6 +64,26 @@ describe("quarterly target calculations", () => {
     expect(metrics.collectionActual).toBe(500);
     expect(metrics.salesProgress).toBe(65);
     expect(metrics.collectionProgress).toBeCloseTo(62.5, 8);
+  });
+
+  it("flags sales and collections that fall below the elapsed-quarter pace", () => {
+    const metrics = getTargetMetrics(data, target, "daily", new Date("2026-03-01T12:00:00"));
+    expect(metrics.expectedProgress).toBeGreaterThan(60);
+    expect(metrics.salesBehindPace).toBe(true);
+    expect(metrics.collectionBehindPace).toBe(true);
+  });
+
+  it("builds a date-filtered report with customer, product, and fast-entry summaries", () => {
+    const withFastEntry: AppData = { ...data, sales: [...data.sales, { id: "quick-sale-report", customerId: "", productId: "", quantity: 0, unitPrice: 120, discount: 0, total: 120, date: "2026-02-20" }] };
+    const report = buildTargetReport(withFastEntry, "2026-02-01", "2026-02-28", target);
+    expect(report.salesActual).toBe(520);
+    expect(report.collectionActual).toBe(200);
+    expect(report.fastSales).toBe(120);
+    expect(report.customers).toEqual([{ id: "c1", name: "عميل ١", sales: 400, collections: 200 }]);
+    expect(report.products[0].unitsRemaining).toBe(12);
+    expect(report.transactions).toHaveLength(3);
+    expect(isValidDateRange("2026-02-01", "2026-02-28")).toBe(true);
+    expect(isValidDateRange("2026-03-01", "2026-02-28")).toBe(false);
   });
 
   it("normalizes malformed numeric data before it is saved locally", () => {

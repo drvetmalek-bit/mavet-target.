@@ -30,6 +30,8 @@ export default function HomeScreen() {
               <View style={styles.progressBlock}><View style={styles.progressLine}><Text style={styles.percent}>{Math.round(metrics.collectionProgress)}%</Text><Text style={styles.progressLabel}>إنجاز التحصيل</Text></View><ProgressBar value={metrics.collectionProgress} color="#36B889" /></View>
             </View>
 
+            {(metrics.salesBehindPace || metrics.collectionBehindPace) ? <View style={styles.warningCard}><MaterialIcons name="warning-amber" color="#B36B08" size={23} /><View style={styles.warningText}><Text style={styles.warningTitle}>تنبيه: الإنجاز أقل من المعدل المطلوب</Text><Text style={styles.warningDetail}>{metrics.salesBehindPace ? `البيع ${Math.round(metrics.salesProgress)}%` : ""}{metrics.salesBehindPace && metrics.collectionBehindPace ? " • " : ""}{metrics.collectionBehindPace ? `التحصيل ${Math.round(metrics.collectionProgress)}%` : ""} — المطلوب حتى اليوم {Math.round(metrics.expectedProgress)}%.</Text></View></View> : null}
+
             <SectionTitle title="المحقق ونسبة التحقيق" />
             <View style={styles.metricRow}><MetricCard label="المحقق من البيع" value={`${currency(metrics.salesActual)} ج.م`} caption={`${Math.round(metrics.salesProgress)}% من تارجت البيع`} accent="#E89B2C" icon="trending-up" iconSide="left" /><MetricCard label="المحقق من التحصيل" value={`${currency(metrics.collectionActual)} ج.م`} caption={`${Math.round(metrics.collectionProgress)}% من تارجت التحصيل`} accent="#198465" icon="account-balance-wallet" iconSide="right" /></View>
             <View style={styles.metricRow}><MetricCard label="متبقي للبيع" value={`${currency(metrics.salesRemaining)} ج.م`} caption={`تارجت ${currency(activeTarget.salesTarget)} ج.م`} accent="#C47B12" icon="flag" iconSide="left" /><MetricCard label="متبقي للتحصيل" value={`${currency(metrics.collectionRemaining)} ج.م`} caption={`تارجت ${currency(activeTarget.collectionTarget)} ج.م`} accent="#198465" icon="flag" iconSide="right" /></View>
@@ -65,6 +67,10 @@ const styles = StyleSheet.create({
   percent: { color: "#F9F2FA", fontSize: 12, fontWeight: "800" },
   progressLabel: { color: "#F9F2FA", fontSize: 12, fontWeight: "700" },
   metricRow: { flexDirection: "row-reverse", gap: 10, marginBottom: 22 },
+  warningCard: { flexDirection: "row-reverse", alignItems: "center", gap: 10, padding: 13, borderRadius: 16, backgroundColor: "#FFF5E4", borderWidth: 1, borderColor: "#F0CE91", marginTop: -4, marginBottom: 16 },
+  warningText: { flex: 1, alignItems: "flex-end" },
+  warningTitle: { color: "#8A5105", fontSize: 13, fontWeight: "900", textAlign: "right" },
+  warningDetail: { color: "#9B6A25", fontSize: 11, lineHeight: 17, marginTop: 3, textAlign: "right" },
   cadence: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#E8DFE9", borderRadius: 17, padding: 12, marginBottom: 10 },
   cadenceQuestion: { color: "#766C79", fontSize: 12, fontWeight: "700", textAlign: "right", marginBottom: 9 },
   cadenceButtons: { flexDirection: "row-reverse", gap: 7 },

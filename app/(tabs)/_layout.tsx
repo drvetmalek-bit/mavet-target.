@@ -11,10 +11,11 @@ export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const bottomPadding = Platform.OS === "web" ? 10 : Math.max(insets.bottom, 8);
   return (
-    <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: colors.tint, tabBarInactiveTintColor: colors.muted, tabBarButton: HapticTab, tabBarLabelStyle: { fontSize: 11, fontWeight: "700" }, tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.border, paddingTop: 7, paddingBottom: bottomPadding, height: 57 + bottomPadding } }}>
+    <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: colors.tint, tabBarInactiveTintColor: colors.muted, tabBarButton: HapticTab, tabBarLabelStyle: { fontSize: 10, fontWeight: "700" }, tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.border, paddingTop: 7, paddingBottom: bottomPadding, height: 57 + bottomPadding } }}>
       <Tabs.Screen name="index" options={{ title: "الرئيسية", tabBarIcon: ({ color }) => <IconSymbol size={25} name="chart.bar.fill" color={color} /> }} />
       <Tabs.Screen name="customers" options={{ title: "العملاء", tabBarIcon: ({ color }) => <IconSymbol size={25} name="person.2.fill" color={color} /> }} />
       <Tabs.Screen name="products" options={{ title: "المنتجات", tabBarIcon: ({ color }) => <IconSymbol size={25} name="shippingbox.fill" color={color} /> }} />
+      <Tabs.Screen name="reports" options={{ title: "التقارير", tabBarIcon: ({ color }) => <IconSymbol size={25} name="doc.text.fill" color={color} /> }} />
       <Tabs.Screen name="settings" options={{ title: "الإعدادات", tabBarIcon: ({ color }) => <IconSymbol size={25} name="gearshape.fill" color={color} /> }} />
     </Tabs>
   );

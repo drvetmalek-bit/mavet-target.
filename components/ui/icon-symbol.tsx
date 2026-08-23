@@ -30,6 +30,7 @@ const MAPPING = {
   "trash": "delete-outline",
   "calendar": "calendar-month",
   "circle.fill": "circle",
+  "doc.text.fill": "summarize",
 } as IconMapping;
 
 /**
