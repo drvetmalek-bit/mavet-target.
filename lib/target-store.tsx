@@ -7,6 +7,7 @@ import {
   type Customer,
   type Product,
   type QuarterTarget,
+  type RepresentativeProfile,
   type Sale,
   EMPTY_DATA,
   loadAppData,
@@ -20,6 +21,7 @@ type TargetStore = AppData & {
   setCadence: (value: Cadence) => void;
   upsertTarget: (target: QuarterTarget) => void;
   setActiveTargetId: (id?: string) => void;
+  upsertRepresentative: (profile: RepresentativeProfile) => void;
   upsertCustomer: (customer: Customer) => void;
   deleteCustomer: (id: string) => void;
   upsertProduct: (product: Product) => void;
@@ -65,6 +67,7 @@ export function TargetProvider({ children }: PropsWithChildren) {
         }));
       },
       setActiveTargetId: (id) => setData((current) => ({ ...current, activeTargetId: id })),
+      upsertRepresentative: (profile) => setData((current) => ({ ...current, representative: profile })),
       upsertCustomer: (customer) => {
         setData((current) => ({
           ...current,

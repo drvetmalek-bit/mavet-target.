@@ -1,4 +1,4 @@
-import { type AppData, type QuarterTarget, quarterDates } from "./target-data";
+import { type AppData, type QuarterTarget, type RepresentativeProfile, quarterDates } from "./target-data";
 
 export type ReportCustomerRow = {
   id: string;
@@ -26,6 +26,13 @@ export type ReportTransaction = {
   amount: number;
 };
 
+export type MonthlyPerformance = {
+  key: string;
+  label: string;
+  sales: number;
+  collections: number;
+};
+
 export type TargetReport = {
   start: string;
   end: string;
@@ -37,6 +44,8 @@ export type TargetReport = {
   fastCollections: number;
   salesTarget?: number;
   collectionTarget?: number;
+  representative?: RepresentativeProfile;
+  monthly: MonthlyPerformance[];
   customers: ReportCustomerRow[];
   products: ReportProductRow[];
   transactions: ReportTransaction[];
@@ -77,6 +86,13 @@ export function buildTargetReport(data: AppData, start: string, end: string, act
   ].sort((a, b) => b.date.localeCompare(a.date));
   const salesActual = sales.reduce((sum, sale) => sum + sale.total, 0);
   const collectionActual = collections.reduce((sum, collection) => sum + collection.amount, 0);
+  const startDate = new Date(`${start}T12:00:00`);
+  const endDate = new Date(`${end}T12:00:00`);
+  const monthly: MonthlyPerformance[] = [];
+  for (let cursor = new Date(startDate.getFullYear(), startDate.getMonth(), 1); cursor <= endDate; cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1)) {
+    const key = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, "0")}`;
+    monthly.push({ key, label: new Intl.DateTimeFormat("ar-EG", { month: "short" }).format(cursor), sales: sales.filter((sale) => sale.date.startsWith(key)).reduce((sum, sale) => sum + sale.total, 0), collections: collections.filter((collection) => collection.date.startsWith(key)).reduce((sum, collection) => sum + collection.amount, 0) });
+  }
   return {
     start,
     end,
@@ -88,6 +104,8 @@ export function buildTargetReport(data: AppData, start: string, end: string, act
     fastCollections: collections.filter((collection) => !collection.customerId).reduce((sum, collection) => sum + collection.amount, 0),
     salesTarget: isActiveQuarter ? activeTarget?.salesTarget : undefined,
     collectionTarget: isActiveQuarter ? activeTarget?.collectionTarget : undefined,
+    representative: data.representative,
+    monthly,
     customers,
     products,
     transactions,

@@ -18,6 +18,12 @@ export type Customer = {
   createdAt: string;
 };
 
+export type RepresentativeProfile = {
+  name: string;
+  phone?: string;
+  territory?: string;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -48,6 +54,7 @@ export type Collection = {
 
 export type AppData = {
   activeTargetId?: string;
+  representative?: RepresentativeProfile;
   targets: QuarterTarget[];
   customers: Customer[];
   products: Product[];
@@ -74,6 +81,7 @@ export function normalizeAppData(value: unknown): AppData {
   const raw = (value ?? {}) as Partial<AppData>;
   return {
     activeTargetId: raw.activeTargetId,
+    representative: raw.representative && typeof raw.representative.name === "string" ? { name: raw.representative.name, phone: raw.representative.phone, territory: raw.representative.territory } : undefined,
     targets: Array.isArray(raw.targets)
       ? raw.targets.map((target) => ({
           ...target,

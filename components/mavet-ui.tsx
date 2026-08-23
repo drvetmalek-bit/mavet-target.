@@ -61,7 +61,7 @@ export function IconAction({ icon, onPress, label }: { icon: React.ComponentProp
   );
 }
 
-export function InputField({ label, value, onChangeText, placeholder, keyboardType = "default", multiline = false, editable = true }: { label: string; value: string; onChangeText: (value: string) => void; placeholder?: string; keyboardType?: "default" | "numeric" | "decimal-pad"; multiline?: boolean; editable?: boolean }) {
+export function InputField({ label, value, onChangeText, placeholder, keyboardType = "default", multiline = false, editable = true }: { label: string; value: string; onChangeText: (value: string) => void; placeholder?: string; keyboardType?: "default" | "numeric" | "decimal-pad" | "phone-pad"; multiline?: boolean; editable?: boolean }) {
   return (
     <View style={styles.fieldWrap}>
       <Text style={styles.fieldLabel}>{label}</Text>

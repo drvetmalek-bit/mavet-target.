@@ -74,7 +74,7 @@ describe("quarterly target calculations", () => {
   });
 
   it("builds a date-filtered report with customer, product, and fast-entry summaries", () => {
-    const withFastEntry: AppData = { ...data, sales: [...data.sales, { id: "quick-sale-report", customerId: "", productId: "", quantity: 0, unitPrice: 120, discount: 0, total: 120, date: "2026-02-20" }] };
+    const withFastEntry: AppData = { ...data, representative: { name: "أحمد محمد", phone: "01000000000", territory: "القاهرة" }, sales: [...data.sales, { id: "quick-sale-report", customerId: "", productId: "", quantity: 0, unitPrice: 120, discount: 0, total: 120, date: "2026-02-20" }] };
     const report = buildTargetReport(withFastEntry, "2026-02-01", "2026-02-28", target);
     expect(report.salesActual).toBe(520);
     expect(report.collectionActual).toBe(200);
@@ -82,6 +82,8 @@ describe("quarterly target calculations", () => {
     expect(report.customers).toEqual([{ id: "c1", name: "عميل ١", sales: 400, collections: 200 }]);
     expect(report.products[0].unitsRemaining).toBe(12);
     expect(report.transactions).toHaveLength(3);
+    expect(report.representative?.name).toBe("أحمد محمد");
+    expect(report.monthly).toEqual([{ key: "2026-02", label: expect.any(String), sales: 520, collections: 200 }]);
     expect(isValidDateRange("2026-02-01", "2026-02-28")).toBe(true);
     expect(isValidDateRange("2026-03-01", "2026-02-28")).toBe(false);
   });
@@ -98,5 +100,6 @@ describe("quarterly target calculations", () => {
     expect(normalized.products[0].unitPrice).toBe(75.5);
     expect(normalized.products[0].quantityTarget).toBe(0);
     expect(normalized.sales[0].total).toBe(146);
+    expect(normalizeAppData({ representative: { name: "مندوب", phone: "0123", territory: "الإسكندرية" } }).representative).toEqual({ name: "مندوب", phone: "0123", territory: "الإسكندرية" });
   });
 });
