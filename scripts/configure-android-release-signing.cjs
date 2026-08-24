@@ -13,7 +13,9 @@ if (!source.includes("signingConfigs.release")) {
             keyPassword System.getenv("ANDROID_KEY_PASSWORD")
         }
 `;
-  source = source.replace("    buildTypes {", `${signingConfig}    buildTypes {`);
+  const signingConfigsEnd = "    }\n    buildTypes {";
+  if (!source.includes(signingConfigsEnd)) throw new Error("Android signing configuration block was not found.");
+  source = source.replace(signingConfigsEnd, `${signingConfig}${signingConfigsEnd}`);
   const releaseStart = source.indexOf("        release {");
   if (releaseStart === -1) throw new Error("Android release build type was not found.");
   const beforeRelease = source.slice(0, releaseStart);
