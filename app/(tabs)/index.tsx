@@ -22,6 +22,7 @@ export default function HomeScreen() {
     <ScreenContainer className="px-5" containerClassName="bg-background">
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <AppHeader title="Mavet Target" subtitle={activeTarget ? `الربع ${activeTarget.quarter} • ${activeTarget.year}` : "متابعة أهدافك الربع سنوية"} logoCaption={representative?.name} action={<IconAction icon="settings" label="الإعدادات" onPress={() => router.push("/(tabs)/settings")} />} />
+        {representative?.name ? <View style={styles.welcome}><Text style={styles.welcomeTitle}>أهلاً بك، {representative.name}</Text><Text style={styles.welcomeText}>نتمنى لك يوماً موفقاً وتحقيقاً قوياً للتارجت.</Text></View> : null}
         {!activeTarget ? (
           <EmptyState icon="flag" title="ابدأ بتحديد تارجت الربع" description="أدخل تارجت البيع والتحصيل للربع الميلادي الحالي، ثم أضف العملاء والمنتجات." action={<PrimaryButton label="إعداد التارجت" onPress={() => router.push("/target-settings")} icon="tune" />} />
         ) : (
@@ -63,6 +64,9 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   scroll: { paddingTop: 10, paddingBottom: 34 },
   targetCard: { padding: 18, backgroundColor: "#4A1E53", borderRadius: 23, marginBottom: 16 },
+  welcome: { backgroundColor: "#F4EDF6", borderColor: "#DEC8E3", borderWidth: 1, borderRadius: 17, padding: 13, alignItems: "flex-end", marginBottom: 13 },
+  welcomeTitle: { color: "#4A1E53", fontSize: 16, fontWeight: "900", textAlign: "right" },
+  welcomeText: { color: "#766C79", fontSize: 11, marginTop: 3, textAlign: "right" },
   targetTop: { flexDirection: "row-reverse", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
   cardEyebrow: { color: "#E7D6EB", fontSize: 13, fontWeight: "700", textAlign: "right" },
   targetTitle: { color: "#FFFFFF", fontSize: 17, fontWeight: "900", marginTop: 2, textAlign: "right" },
