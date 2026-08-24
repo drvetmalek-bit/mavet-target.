@@ -1,6 +1,6 @@
 # GitHub Android Build Setup
 
-The GitHub repository is named `drvetmalek-bit/mavet-target.` (including the trailing period). The repository contains an Android AAB workflow at `.github/workflows/android-aab.yml`; it runs on GitHub infrastructure and does not submit an EAS cloud build.
+The GitHub repository is named `drvetmalek-bit/mavet-target.` (including the trailing period). The repository contains an Android AAB workflow at `.github/workflows/android-aab.yml`; it runs on GitHub infrastructure and does not submit an EAS cloud build. A repository-scoped GitHub token used to configure the workflow needs read/write permissions for **Contents**, **Workflows**, **Secrets**, and **Actions**; these permissions are limited to this repository.
 
 The workflow needs these GitHub Actions secrets, which are never committed to source control:
 
